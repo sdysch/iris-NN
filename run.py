@@ -69,6 +69,7 @@ from sklearn.preprocessing import normalize
 X = data.iloc[:,1:5].values
 y = data.iloc[:,5].values
 X_normalized = normalize(X, axis = 0)
+#print(X_normalized)
 
 # split into training, testing
 #fraction = 0.75
@@ -84,7 +85,7 @@ y_test  = y[trainLength:]
 
 # === define model ===
 from keras.models import Sequential 
-from keras.layers import Dense,Activation,Dropout 
+from keras.layers import Dense, Activation, Dropout
 from keras.layers.normalization import BatchNormalization 
 from keras.utils import np_utils
 
@@ -102,12 +103,14 @@ model.add(Dense(1000, input_dim = 4, activation = "relu"))
 model.add(Dense(500,  activation = "relu"))
 model.add(Dense(300,  activation = "relu"))
 model.add(Dropout(0.2))
+# outputs add up to 1
 model.add(Dense(3, activation = "softmax"))
 model.compile(loss = "categorical_crossentropy", optimizer = "adam", metrics=["accuracy"])
 
 model.summary()
 
-model.fit(X_train, y_train, validation_data = (X_test, y_test), batch_size = 20, epochs = 10, verbose = 1)
+#model.fit(X_train, y_train, validation_data = (X_test, y_test), batch_size = 20, epochs = 5, verbose = 1)
+model.fit(X_train, y_train, epochs = 10)
 
 prediction = model.predict(X_test)
 length = len(prediction)
@@ -116,3 +119,6 @@ predict_label = np.argmax(prediction, axis = 1)
 
 accuracy = np.sum(y_label == predict_label) / length
 print(f"Accuracy of the dataset {accuracy}")
+
+# save model
+model.save("iris-model.h5")
